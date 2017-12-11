@@ -1,0 +1,9 @@
+{
+  "name": "firebase-test-functions",
+  "description": "Firebase Test Functions",
+  "dependencies": {
+    "firebase-admin": "^5.0.0",
+    "firebase-functions": "^0.7.0"
+  },
+  "private": true
+}

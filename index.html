@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Firebase Test</title>
+</head>
+<body>
+
+<h2>Firebase Test</h2>
+
+<ul id="list"></ul>
+
+<h3><a href="javascript:addItem();">Add Item</a></h3>
+
+<script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-firestore.js"></script>
+<script>
+    // Initialize Firebase
+    let config = {
+        apiKey: "AIzaSyCKNvhNBDg8L-IcOoYnFzqLQCd4LFSRe0c",
+        authDomain: "cyface-forks.firebaseapp.com",
+        databaseURL: "https://cyface-forks.firebaseio.com",
+        projectId: "cyface-forks",
+        storageBucket: "",
+        messagingSenderId: "726484858258"
+    };
+    firebase.initializeApp(config);
+</script>
+<script>
+    const collection = firebase.firestore().collection('cards');
+    addAnother = function (id, name) {
+        let ul = document.getElementById("list");
+        let li = document.createElement("li");
+        let children = ul.children.length + 1;
+        li.setAttribute("id", id);
+        li.appendChild(document.createTextNode(name));
+        ul.appendChild(li)
+    };
+    updateItem = function (id, name) {
+        document.getElementById(id).innerHTML = name;
+    };
+    addItem = function () {
+        let locData = {
+            'name': Math.random().toString(36).substr(2, 5),
+            'timeStamp': new Date().getTime()
+        };
+        collection.add(locData);
+    };
+    removeItem = function (id) {
+        document.getElementById(id).remove();
+    };
+    firebase.auth().signInAnonymously().then(() => {
+        collection.orderBy("timeStamp").onSnapshot(snapshot => {
+            snapshot.docChanges.forEach(change => {
+                data = change.doc.data();
+
+                //console.log("CHANGE");
+                //console.log(change);
+                //console.log(data);
+
+                let name = data.uppercase_name ? data.uppercase_name : data.name;
+
+                if (change.type === 'added') {
+                    console.log("ADDED");
+                    addAnother(change.doc.id, name);
+                }
+
+                if (change.type === 'modified') {
+                    console.log("MODIFIED");
+                    updateItem(change.doc.id, name);
+                }
+
+                if (change.type === 'removed') {
+                    console.log("REMOVED");
+                    removeItem(change.doc.id);
+                }
+            });
+        });
+    });
+
+</script>
+</body>
+</html>
